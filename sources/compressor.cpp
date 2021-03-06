@@ -588,37 +588,27 @@ void Compressor::CompressFile(H5File* file, int compressionLevel){
     }
     try {
         switch(compressionLevel) {
-            case (0):
-                getOnlyReads(file,compressedFileName);
-                break;
             case (1):
                 h5repack::repack(file, compressedFileName, "9");
                 break;
             case (2):
-                szipCompression(file,compressedFileName);
+                readTreeFile();
+                compressEventsAndReads(file,compressedFileName,true);
                 break;
             case (3):
-            case (4):
-                readTreeFile();
-                compressEventsAndReads(file,compressedFileName,compressionLevel == 4);
-                break;
-            case (5):
                 removeLogs(file, compressedFileName);
                 break;
-            case (6):
+            case (4):
+                getOnlyReads(file,compressedFileName);
+                break;
+            case (5):
                 Stats::getStats(file, true);
                 break;
-            case (7):
+            case (6):
                 Stats::getStats(file,false);
                 break;
-            case (8):
+            case (7):
                 Stats::getStats(file);
-                break;
-            case (9):
-                generateHuffmanFromExample(file);
-                break;
-            case (10):
-                generateCsvFromExample(file);
                 break;
             default:
                 ErrorHandler::handleError(3);
