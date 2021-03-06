@@ -54,7 +54,7 @@ void saveAttributes(string fileName, int compressionLvl){
             it++;
         }
 
-        if(compressionLvl == 3 || compressionLvl  == 4){
+        if (compressionLvl == 2){
             DataSpace dataSpace = Utils::getDataspace(firstReadsCount + 1, firstReadsCount + 1);
             DSetCreatPropList *creatPropList = Utils::createCompressedSetCreatPropList(firstReadsCount + 1);
             DataSet * newSignalsDataset = new DataSet(file.createDataSet("first_reads", Utils::getSignalDataType(), dataSpace, *creatPropList));
@@ -583,7 +583,7 @@ void Compressor::CompressFile(H5File* file, int compressionLevel){
     Utils::replaceString(compressedFileName, "_copy.fast5", "_repacked.fast5");
 
     //guarda nivel de compresion en atributo
-    if (compressionLevel > 0 && compressionLevel < 6){
+    if (compressionLevel == 1 || compressionLevel == 2){
         globalAttributes.insert(pair<string,int>("compLevel",compressionLevel));
     }
     try {
@@ -633,10 +633,10 @@ void Compressor::DeCompressFile(H5File* file, int compressionLevel){
     H5Adelete(root.getId(),attrName.c_str());
 
     try {
-        if (compressionLevel == 1 || compressionLevel == 2) {
+        if (compressionLevel == 1) {
             h5repack::repack(file, deCompressedFileName, "3");
-        } else if (compressionLevel == 3 || compressionLevel == 4) {
-            deCompressEventsAndReads(file,deCompressedFileName,compressionLevel == 4);
+        } else if (compressionLevel == 2) {
+            deCompressEventsAndReads(file,deCompressedFileName,true);
         }
         else {
             ErrorHandler::handleError(3);
